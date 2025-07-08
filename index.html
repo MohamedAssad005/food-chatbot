@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FoodBot</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #chatbox {
+      width: 400px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    .msg {
+      margin: 5px 0;
+    }
+
+    .user {
+      text-align: right;
+      color: blue;
+    }
+
+    .bot {
+      text-align: left;
+      color: green;
+    }
+
+    #inputArea {
+      display: flex;
+    }
+
+    #userInput {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="chatbox">
+    <div id="messages"></div>
+    <div id="inputArea">
+      <input type="text" id="userInput" placeholder="Order your food..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const menu = {
+      idly: 10,
+      dosa: 20,
+      parotta: 25,
+      puri: 20,
+      coffee: 15,
+      tea: 10,
+      chickenrice:60,
+      paneerbuttermasala:100,
+      chickennoodles:90
+
+    };
+
+    function sendMessage() {
+      const input = document.getElementById("userInput").value.toLowerCase();
+      if (!input.trim()) return;
+
+      appendMessage("You: " + input, "user");
+
+      const items = Object.keys(menu);
+      let total = 0;
+      let response = "";
+
+      let found = false;
+
+      items.forEach(item => {
+        if (input.includes(item)) {
+          found = true;
+          const regex = new RegExp("(\\d+)\\s*" + item);
+          const match = input.match(regex);
+          const quantity = match ? parseInt(match[1]) : 1;
+          const price = menu[item] * quantity;
+          response += `✅ ${item} x ${quantity} = ₹${price}<br>`;
+          total += price;
+        }
+      });
+
+      if (found) {
+        response += `<br>💰 Total = ₹${total}`;
+      } else {
+        response = "❓ I didn't understand. Please try like: '2 dosa and 1 tea'";
+      }
+
+      appendMessage("Bot: " + response, "bot");
+      document.getElementById("userInput").value = "";
+    }
+
+    function appendMessage(text, type) {
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "msg " + type;
+      msgDiv.innerHTML = text;
+      document.getElementById("messages").appendChild(msgDiv);
+      msgDiv.scrollIntoView();
+    }
+  </script>
+</body>
+</html>
